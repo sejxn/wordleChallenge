@@ -1,4 +1,3 @@
-const correctAnswer = "APPLE"
 
 let attempts = 0;
 let index = 0;
@@ -24,19 +23,28 @@ function appStart(){
         clearInterval(timer);
     }
 
-    const handleEnterKey = () => {
+    const handleEnterKey = async() => {
         let cCount = 0;
+        const res = await fetch("/answer");
+        const ansC = await res.json();
+        const correctAnswer = ansC.answer;
+
         for(let i = 0; i < 5; i++){
             const block = document.querySelector(`.board-column[data-index='${attempts}${i}']`);
             const letter = block.innerText;
             const cAnswer = correctAnswer[i];
-
+            const keyBlock = document.querySelector(`.keyboard-column[data-key="${cAnswer}"]`);
             if(letter === cAnswer) {
                 cCount++;
                 block.style.backgroundColor = "#6AAA64";
+                keyBlock.style.backgroundColor = "#6AAA64";
             }
-            else if(correctAnswer.includes(letter)) block.style.background = "#C9B458";
-            else block.style.background = "#787C7E";
+            else if(correctAnswer.includes(letter)) {
+                block.style.background = "#C9B458";
+            }
+            else {
+                block.style.background = "#787C7E";
+            }
             block.style.color = "white";
         }
 
@@ -69,6 +77,25 @@ function appStart(){
         }
     }
 
+    const handleKeyClick = (e) => {
+        const key = e.target.dataset.key
+
+        if(!key) return;
+
+        const keyCode = key.charCodeAt(0);
+        const thisBlock = document.querySelector(`.board-column[data-index='${attempts}${index}']`);
+        console.log(key);
+        if(key === "back") handleBackspace();
+        else if(index === 5){
+            if(key === "enter") handleEnterKey();
+            else return;
+        }
+        else if(65 <= keyCode && keyCode <= 90){
+            thisBlock.innerText = key;
+            index++;
+        }
+    }
+
     const startTimer = () => {
         const startTime = new Date();
 
@@ -84,8 +111,11 @@ function appStart(){
         timer = setInterval(setTime, 1000);
     }
 
+    const keyBtn = document.querySelector(".keyboard");
+    console.log(keyBtn);
     startTimer();
     window.addEventListener("keydown", handleKeydown);
+    keyBtn.addEventListener("click", handleKeyClick);
 }
 
 appStart();
