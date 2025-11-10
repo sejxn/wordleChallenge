@@ -4,6 +4,12 @@ let index = 0;
 let timer;
 
 function appStart(){
+    const shakeBody = () => {
+        const bodyAnim = document.querySelector("main");
+        bodyAnim.classList.remove("shake");
+        void bodyAnim.offsetWidth;
+        bodyAnim.classList.add("shake");
+    }
     const displayGameover = () => {
         const div = document.createElement("div");
         div.innerText = "게임이 종료됐습니다.";
@@ -13,12 +19,14 @@ function appStart(){
 
     const nextLine = () => {
         if(attempts === 6) return gameOver();
+        shakeBody();
         attempts++;
         index = 0;
     }
 
     const gameOver = () => {
         window.removeEventListener("keydown", handleKeydown);
+        shakeBody();
         displayGameover();
         clearInterval(timer);
     }
